@@ -30,11 +30,56 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        .transition-all {
-            transition: all 0.3s ease;
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .hover-lift:hover {
-            transform: translateY(-2px);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .flat-button {
+            transition: all 0.2s ease;
+            border: none;
+            box-shadow: none;
+        }
+        .flat-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #0071E3;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .nav-link.active::after {
+            width: 100%;
+        }
+        /* 修复下拉菜单 */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            width: 12rem;
+            background-color: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 50;
+            overflow: hidden;
+        }
+        .dropdown:hover .dropdown-menu {
+            display: block;
         }
     </style>
     {% block head %}{% endblock %}
@@ -45,11 +90,36 @@
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <a href="{{ url_for('index') }}" class="text-2xl font-semibold tracking-tight">简洁风博客</a>
             <nav>
-                <ul class="flex space-x-8">
-                    <li><a href="{{ url_for('index') }}" class="text-gray-700 hover:text-apple-blue transition-all">首页</a></li>
-                    <li><a href="{{ url_for('about') }}" class="text-gray-700 hover:text-apple-blue transition-all">关于</a></li>
+                <ul class="flex space-x-8 items-center">
+                    <li><a href="{{ url_for('index') }}" class="nav-link text-gray-700 hover:text-apple-blue">首页</a></li>
+                    <li><a href="{{ url_for('game') }}" class="nav-link text-gray-700 hover:text-apple-blue">小游戏</a></li>
+                    <li><a href="{{ url_for('about') }}" class="nav-link text-gray-700 hover:text-apple-blue">关于</a></li>
+                    
                     {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('admin_dashboard') }}" class="text-gray-700 hover:text-apple-blue transition-all">管理</a></li>
+                        <li class="relative dropdown">
+                            <a href="#" class="flex items-center space-x-1 text-gray-700 hover:text-apple-blue">
+                                <span>{{ current_user.username }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </a>
+                            <div class="dropdown-menu py-1">
+                                <a href="{{ url_for('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">我的文章</a>
+                                <a href="{{ url_for('new_post') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">写文章</a>
+                                {% if current_user.is_admin %}
+                                    <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">管理后台</a>
+                                {% endif %}
+                                <div class="border-t border-gray-100"></div>
+                                <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">退出登录</a>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ url_for('login') }}" class="px-4 py-2 rounded-md bg-white text-apple-blue border border-apple-blue hover:bg-apple-blue hover:text-white transition-all">登录</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('register') }}" class="px-4 py-2 rounded-md bg-apple-blue text-white hover:bg-blue-600 transition-all">注册</a>
+                        </li>
                     {% endif %}
                 </ul>
             </nav>
@@ -77,9 +147,27 @@
     <!-- Footer -->
     <footer class="bg-apple-gray py-8">
         <div class="container mx-auto px-4">
-            <div class="text-center text-gray-500 text-sm">
-                <p>© {{ now.year }} 简洁风个人博客. 保留所有权利.</p>
-                <p class="mt-2">用 ❤️ 和 Flask 构建</p>
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-gray-500 text-sm">© {{ now.year }} 简洁风个人博客. 保留所有权利.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="https://weibo.com" target="_blank" class="text-gray-500 hover:text-red-500"> <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M21.5 6.151a8.6 8.6 0 01-2.48.68 4.31 4.31 0 001.9-2.388 8.604 8.604 0 01-2.743 1.048 4.3 4.3 0 00-7.374 3.923A12.23 12.23 0 013.31 5.018a4.3 4.3 0 001.33 5.738 4.28 4.28 0 01-1.948-.538v.054a4.302 4.302 0 003.45 4.216 4.305 4.305 0 01-1.94.074 4.3 4.3 0 004.014 2.983 8.636 8.636 0 01-5.338 1.835c-.347 0-.69-.02-1.03-.06A12.186 12.186 0 008.97 21c7.746 0 11.985-6.42 11.985-11.985 0-.183-.004-.365-.012-.546a8.55 8.55 0 002.087-2.167l-.47-.151z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                
+                <a href="https://www.baidu.com" target="_blank" class="text-gray-500 hover:text-blue-600"> <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.29 15.17c-.43.64-.99 1.15-1.66 1.52-.67.37-1.42.56-2.25.56s-1.58-.19-2.25-.56c-.67-.37-1.23-.88-1.66-1.52-.43-.64-.65-1.37-.65-2.2 0-1.03.35-1.92.99-2.65.65-.73 1.5-1.1 2.56-1.1.99 0 1.83.33 2.47 1 .64.67.98 1.55.98 2.65 0 .83-.22 1.56-.63 2.2zm-1.66-5.87c-.36-.4-.82-.61-1.36-.61s-1 .21-1.36.61c-.36.4-.54.9-.54 1.49s.18 1.09.54 1.49c.36.4.82.61 1.36.61s1-.21 1.36-.61c.36-.4.54-.9.54-1.49s-.18-1.09-.54-1.49z"/>
+                    </svg>
+                </a>
+                
+                <a href="https://bilibili.com" target="_blank" class="text-gray-500 hover:text-pink-500"> <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                       <path d="M14.213 10.879l-3.318-3.318a.698.698 0 00-1.185.494v6.636a.698.698 0 001.185.494l3.318-3.318a.698.698 0 000-.988z"/>
+                       <path fill-rule="evenodd" d="M2.998 12.71a9.714 9.714 0 006.33 8.743c.09.04.15-.027.15-.123v-1.766a.715.715 0 01.377-.638c1.373-.78 2.336-2.185 2.336-3.805 0-1.62-.962-3.024-2.336-3.804a.715.715 0 01-.377-.639V9.01c0-.096-.06-.163-.15-.123A9.714 9.714 0 002.998 17.6c-1.57 0-3.037-.615-4.137-1.714C-2.238 14.787-2.853 13.32-2.853 11.75c0-1.57.615-3.036 1.714-4.136C-.04 6.515 1.428 5.9 2.999 5.9c1.57 0 3.036.615 4.136 1.714.09.09.175.183.257.278V5.373c0-.096.06-.163.15-.123a9.714 9.714 0 016.33-8.743c.09-.04.15.027.15.123v1.766a.715.715 0 00.377.638c1.373.78 2.336 2.185 2.336 3.805 0 1.62-.962 3.024-2.336 3.804a.715.715 0 00.377.639v1.666c0 .096-.06.163-.15.123a9.714 9.714 0 01-6.33 8.743c-.09.04-.15-.027-.15-.123v-1.766a.715.715 0 00-.377-.638c-1.373-.78-2.336-2.185-2.336-3.805 0-1.62.962-3.024 2.336-3.804a.715.715 0 00.377-.639V9.01c0-.096-.06-.163-.15-.123a9.714 9.714 0 00-6.33-8.743c-.09-.04-.15.027-.15-.123v1.766a.715.715 0 01-.377.638c-1.373-.78-2.336-2.185-2.336-3.805 0-1.62.962-3.024 2.336-3.804a.715.715 0 01.377-.639V5.373c0-.096.06-.163.15-.123z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+                </div>
             </div>
         </div>
     </footer>

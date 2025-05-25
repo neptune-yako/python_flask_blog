@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+
+{% block title %}猜数字游戏 - 简洁风个人博客{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-4xl font-bold mb-8 text-center">猜数字游戏</h1>
+    
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="mb-6 text-center">
+            <p class="text-lg mb-4">我已经想好了一个1到100之间的数字，你能猜出来吗？</p>
+            <p id="hint" class="text-gray-600 mb-2">请输入你的猜测...</p>
+            <p id="attempts" class="text-sm text-gray-500">尝试次数：0</p>
+        </div>
+        
+        <div class="flex items-center justify-center mb-8">
+            <input type="number" id="guessInput" min="1" max="100" 
+                   class="w-24 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-apple-blue focus:border-transparent text-center text-xl"
+                   placeholder="?">
+            <button id="guessButton" 
+                    class="ml-4 px-6 py-2 bg-apple-blue text-white rounded-md hover:bg-blue-600 transition-all">
+                猜一猜
+            </button>
+        </div>
+        
+        <div id="result" class="hidden">
+            <div class="text-center py-6 mb-6 rounded-lg bg-green-50">
+                <p class="text-2xl font-bold text-green-600 mb-2">恭喜你猜对了！</p>
+                <p class="text-gray-600">你用了 <span id="finalAttempts" class="font-semibold">0</span> 次尝试猜出了数字 <span id="targetNumber" class="font-semibold">0</span>。</p>
+            </div>
+            
+            <div class="text-center">
+                <button id="playAgain" 
+                        class="px-6 py-2 bg-apple-blue text-white rounded-md hover:bg-blue-600 transition-all">
+                    再玩一次
+                </button>
+            </div>
+        </div>
+        
+        <div class="mt-8 border-t border-gray-200 pt-6">
+            <h3 class="text-xl font-semibold mb-4">游戏规则</h3>
+            <ul class="list-disc pl-5 space-y-2">
+                <li>系统会随机生成一个1到100之间的整数</li>
+                <li>你需要通过多次猜测找出这个数字</li>
+                <li>每次猜测后，系统会告诉你猜大了还是猜小了</li>
+                <li>目标是用最少的次数猜出正确的数字</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 游戏变量
+        let targetNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+        let gameOver = false;
+        
+        // 获取DOM元素
+        const guessInput = document.getElementById('guessInput');
+        const guessButton = document.getElementById('guessButton');
+        const hint = document.getElementById('hint');
+        const attemptsDisplay = document.getElementById('attempts');
+        const resultDiv = document.getElementById('result');
+        const finalAttemptsDisplay = document.getElementById('finalAttempts');
+        const targetNumberDisplay = document.getElementById('targetNumber');
+        const playAgainButton = document.getElementById('playAgain');
+        
+        // 猜测函数
+        function makeGuess() {
+            if (gameOver) return;
+            
+            const guess = parseInt(guessInput.value);
+            
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                hint.textContent = '请输入1到100之间的有效数字';
+                hint.className = 'text-red-600 mb-2';
+                return;
+            }
+            
+            attempts++;
+            attemptsDisplay.textContent = `尝试次数：${attempts}`;
+            
+            if (guess < targetNumber) {
+                hint.textContent = '猜小了，再大一点！';
+                hint.className = 'text-blue-600 mb-2';
+            } else if (guess > targetNumber) {
+                hint.textContent = '猜大了，再小一点！';
+                hint.className = 'text-orange-600 mb-2';
+            } else {
+                // 猜对了
+                gameOver = true;
+                hint.textContent = '恭喜你猜对了！';
+                hint.className = 'text-green-600 mb-2 font-bold';
+                
+                finalAttemptsDisplay.textContent = attempts;
+                targetNumberDisplay.textContent = targetNumber;
+                resultDiv.classList.remove('hidden');
+                
+                guessButton.disabled = true;
+                guessButton.classList.add('bg-gray-400');
+                guessButton.classList.remove('bg-apple-blue', 'hover:bg-blue-600');
+            }
+            
+            guessInput.value = '';
+            guessInput.focus();
+        }
+        
+        // 重新开始游戏
+        function resetGame() {
+            targetNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            gameOver = false;
+            
+            hint.textContent = '请输入你的猜测...';
+            hint.className = 'text-gray-600 mb-2';
+            attemptsDisplay.textContent = '尝试次数：0';
+            
+            resultDiv.classList.add('hidden');
+            
+            guessButton.disabled = false;
+            guessButton.classList.remove('bg-gray-400');
+            guessButton.classList.add('bg-apple-blue', 'hover:bg-blue-600');
+            
+            guessInput.value = '';
+            guessInput.focus();
+        }
+        
+        // 事件监听
+        guessButton.addEventListener('click', makeGuess);
+        
+        guessInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                makeGuess();
+            }
+        });
+        
+        playAgainButton.addEventListener('click', resetGame);
+        
+        // 初始化
+        guessInput.focus();
+    });
+</script>
+{% endblock %} 

@@ -6,7 +6,9 @@ USE python_flask_blog;
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -26,7 +28,8 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 
 -- 创建初始管理员用户 (密码为 'admin')
-INSERT INTO users (username, password_hash) VALUES ('admin', '$2b$12$1xxxxxxxxxxxxxxxxxxxxuZLbwxnpY0o58unSvIPxddLxGystU2');
+INSERT INTO users (username, email, password_hash, is_admin) 
+VALUES ('admin', 'admin@example.com', '$2b$12$1xxxxxxxxxxxxxxxxxxxxuZLbwxnpY0o58unSvIPxddLxGystU2', TRUE);
 
 -- 创建一些示例文章
 INSERT INTO posts (title, slug, content, excerpt, status, published_at, user_id)
