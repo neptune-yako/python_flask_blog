@@ -26,7 +26,7 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/neptune-yako/python_flask_blog.git
 cd python_flask_blog
 ```
 
