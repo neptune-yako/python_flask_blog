@@ -7,7 +7,7 @@
 - 简洁美观的前台界面，专注于内容阅读
 - 卡片式文章展示，视觉效果更佳
 - 支持用户注册和登录，每个用户都可以发布自己的文章
-- 支持Markdown格式的文章编写
+- 支持 Markdown 格式的文章编写
 - 后台管理系统，方便管理文章
 - 内置趣味小游戏（猜数字）
 - 响应式设计，适配各种设备
@@ -18,7 +18,7 @@
 - 前端：HTML5, TailwindCSS, Vanilla JavaScript
 - 数据库：MySQL
 - 数据库连接：PyMySQL
-- Markdown编辑器：EasyMDE
+- Markdown 编辑器：EasyMDE
 - 代码高亮：Prism.js
 
 ## 安装与运行
@@ -62,13 +62,13 @@ DATABASE_NAME=python_flask_blog
 
 ### 5. 初始化数据库
 
-使用我们提供的脚本初始化数据库：
+使用我们提供的脚本初始化数据库 sql 文件
 
 ```bash
 python run.py --init-db
 ```
 
-或者手动在MySQL中执行 `schema.sql` 文件中的SQL语句。
+或者手动在 MySQL 中执行 `schema.sql` 文件中的 SQL 语句。
 
 ### 6. 运行应用
 
@@ -103,12 +103,12 @@ flask run
 
 - 登录用户可以创建、编辑和删除自己的文章
 - 支持草稿和发布两种状态
-- 使用Markdown编辑器编写文章内容
+- 使用 Markdown 编辑器编写文章内容
 
 ### 小游戏
 
 - 内置猜数字游戏，为博客增添趣味性
-- 系统随机生成1-100之间的数字，用户通过多次猜测找出正确答案
+- 系统随机生成 1-100 之间的数字，用户通过多次猜测找出正确答案
 
 ## 项目结构
 
@@ -151,4 +151,4 @@ python_flask_blog/
 
 ## 许可证
 
-MIT 
+MIT
